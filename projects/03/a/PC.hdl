@@ -17,4 +17,27 @@ CHIP PC {
 
     PARTS:
     // Put your code here:
+	// This looks real ugly...
+
+	// determine whether to switch to input
+	Mux16(a=res, b=in, sel=load, out=x);
+	
+	// check INC and NOT RESET and NOT LOAD
+	Or(a=reset, b=load, out=resetORload);
+	Not(in=resetORload, out=notresetANDnotload);
+	And(a=notresetANDnotload, b=inc, out=inconly);
+	
+	// perform calculation for out
+	ALU(x=x, y=false, zx=reset, nx=inconly, zy=true, ny=inconly, f=true, no=inconly, out=aluresult);
+	
+	// determine if we need to update register 
+	Or(a=reset, b=load, out=resetorload);
+	Or(a=resetorload, b=inc, out=resetorloadorinc);
+	Register(in=aluresult, load=resetorloadorinc, out=out, out=res);
+
+
+	
+	
+
+	
 }

@@ -16,3 +16,4 @@ If feeding data to a combinational chip (time invariant), it will change its sta
 At start of clock cycle, DFFs receive their outputs from the prev cycle. 
 After, their outputs are fixed until the next cycle, regardless of input changes
 
+
