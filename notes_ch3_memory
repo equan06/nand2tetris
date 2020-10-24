@@ -1,0 +1,18 @@
+basic 1 bit register -> 32 bit register -> multiple registers = RAM
+
+RAM has 3 inputs:
+	- load bit (read/write)
+	- address (which register to access)
+	- data
+	
+RAM width = width of each register (32/64 bit)
+RAM size = number of registers (hundreds of millions)
+
+
+In sequential chips (Data Flip Flops, registers, memory banks, counter chips), outputs only change after clock cycles 
+
+If feeding data to a combinational chip (time invariant), it will change its state as soon as all the inputs arrive. Its output is sequential (some register/RAM). To make sure that the output is ready before the next clock cycle, simply make the clock cycle > max distance between all chip paths
+
+At start of clock cycle, DFFs receive their outputs from the prev cycle. 
+After, their outputs are fixed until the next cycle, regardless of input changes
+
