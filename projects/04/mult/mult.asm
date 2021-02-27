@@ -19,9 +19,9 @@
 	@i
 	D=M // set D=i
 	@R1
-	D=M-D // i = i-R1
+	D=M-D // i = R1-i
 	@END
-	D;JLE // if i > R1 goto END // loop: while 0 < R1 - i == exit loop: 0 >= R1 - i
+	D;JLE // loop: while 0 < R1 - i == exit loop: 0 >= R1 - i
 	@R0  
 	D=M   // set D = R0
  	@R2
