@@ -34,10 +34,4 @@ CHIP PC {
 	Or(a=reset, b=load, out=resetorload);
 	Or(a=resetorload, b=inc, out=resetorloadorinc);
 	Register(in=aluresult, load=resetorloadorinc, out=out, out=res);
-
-
-	
-	
-
-	
 }

@@ -40,4 +40,47 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+
+    Not(in=instruction[15], out=loadAddressA);
+    Mux16(a=instruction[0..15], b=ALUtoMux, sel=instruction[15], out=MuxtoA); // determine what to load to A (ins or ALU)
+    Or(a=loadAddressA, b=instruction[5], out=loadToA); // determine if loading to A (from ins or ALU)
+
+    ARegister(in=MuxtoA, load=loadToA, out=regA, out=regAtoPC, out[0..14]=addressM); 
+    Mux16(a=regA, b=inM, sel=instruction[12], out=muxAM); // use Mem[A] or A as the input to ALU via the a-bit
+
+    ALU(x=regD, y=muxAM, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8],
+     f=instruction[7], no=instruction[6], out=outALUtoD, out=ALUtoMux, out=outM, zr=ALUzr, ng=ALUng);
+
+    // Defining the other states of the ALU out   
+    Not(in=ALUleq, out=ALUpos);
+    Not(in=ALUng, out=ALUgeq);
+    Not(in=ALUzr, out=ALUnzr);
+    Or(a=ALUng, b=ALUzr, out=ALUleq);
+
+    And(a=instruction[4], b=instruction[15], out=loadToD);
+    DRegister(in=outALUtoD, load=loadToD, out=regD); 
+
+    // Determine whether we should jump to the address specified at A
+    Or(a=instruction[0], b=instruction[1], out=or01);
+    Or(a=or01, b=instruction[2], out=or012);
+    And(a=instruction[15], b=or012, out=jmpcmd); // Must be C instruction to jump
+    And(a=instruction[0], b=instruction[1], out=and01);
+    And(a=and01, b=instruction[2], out=and012);
+    DMux8Way(in=jmpcmd, sel=instruction[0..2], a=false, b=JGT, c=JEQ, d=JGE, e=JLT, f=JNE, g=JLE, h=JMP);
+
+    And(a=JGT, b=ALUpos, out=jmpJGT);
+    And(a=JEQ, b=ALUzr, out=jmpJEQ);
+    And(a=JGE, b=ALUgeq, out=jmpJGE);
+    And(a=JLT, b=ALUng, out=jmpJLT);
+    And(a=JNE, b=ALUnzr, out=jmpJNE);
+    And(a=JLE, b=ALUleq, out=jmpJLE);
+    And(a=JMP, b=and012, out=jmpJMP);
+
+    Or8Way(in[0]=false, in[1]=jmpJGT, in[2]=jmpJEQ, in[3]=jmpJGE, 
+    in[4]=jmpJLT, in[5]=jmpJNE, in[6]=jmpJLE, in[7]=jmpJMP, out=jump);
+    Not(in=jump, out=notjump);
+
+    PC(in=regAtoPC, load=jump, inc=notjump, reset=reset, out[0..14]=pc);
+
+    And(a=instruction[15], b=instruction[3], out=writeM);
 }
